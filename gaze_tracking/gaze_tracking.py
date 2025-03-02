@@ -5,6 +5,18 @@ import dlib
 from .eye import Eye
 from .calibration import Calibration
 
+#horizontal ratio will be 0.0 < RIGHT_THRESHOLD < LEFT_THRESHOLD < 1.0
+#(i.e. dividing the eye into three sections)
+RIGHT_THRESHOLD = 0.35
+LEFT_THRESHOLD = 0.65
+
+#vertical ratio will be 0.0 < TOP_THRESHOLD < BOTTOM_THRESHOLD < 1.0
+TOP_THRESHOLD = 0.35
+BOTTOM_THRESHOLD = 0.65
+
+#BLINK_THRESHOLD will be ratio of width of eye to height (eyelid-to-eyelid)
+#not blinking is <= BLINK_THRESHOLD, blinking is > BLINK_THRESHOLD
+BLINKING_THRESHOLD = 3.8
 
 class GazeTracking(object):
     """
@@ -99,12 +111,12 @@ class GazeTracking(object):
     def is_right(self):
         """Returns true if the user is looking to the right"""
         if self.pupils_located:
-            return self.horizontal_ratio() <= 0.35
+            return self.horizontal_ratio() <= RIGHT_THRESHOLD
 
     def is_left(self):
         """Returns true if the user is looking to the left"""
         if self.pupils_located:
-            return self.horizontal_ratio() >= 0.65
+            return self.horizontal_ratio() >= LEFT_THRESHOLD
 
     def is_center(self):
         """Returns true if the user is looking to the center"""
@@ -115,7 +127,7 @@ class GazeTracking(object):
         """Returns true if the user closes his eyes"""
         if self.pupils_located:
             blinking_ratio = (self.eye_left.blinking + self.eye_right.blinking) / 2
-            return blinking_ratio > 3.8
+            return blinking_ratio > BLINKING_THRESHOLD
 
     def annotated_frame(self):
         """Returns the main frame with pupils highlighted"""
@@ -138,19 +150,19 @@ class GazeTracking(object):
 
     def is_winking_left(self):
         if self.pupils_located:
-            return self.eye_left.blinking > 3.8 and self.eye_right.blinking <= 3.8
+            return self.eye_left.blinking > BLINKING_THRESHOLD and self.eye_right.blinking <= BLINKING_THRESHOLD
     
     def is_winking_right(self):
         if self.pupils_located:
-            return self.eye_right.blinking > 3.8 and self.eye_left.blinking <= 3.8
+            return self.eye_right.blinking > BLINKING_THRESHOLD and self.eye_left.blinking <= BLINKING_THRESHOLD
     
     def is_up(self):
         if self.pupils_located:
-            return self.vertical_ratio() <= 0.35
+            return self.vertical_ratio() <= TOP_THRESHOLD
     
     def is_bottom(self):
         if self.pupils_located:
-            return self.vertical_ratio() >= 0.65
+            return self.vertical_ratio() >= BOTTOM_THRESHOLD
 
     def true_gaze_blinking(self):
         '''

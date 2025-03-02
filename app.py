@@ -40,22 +40,36 @@ while True:
     #add markers for pupil location to frame image data
     frame = gaze_tracker.annotated_frame()
 
-    text = "Unknown"
-    if gaze_tracker.is_blinking():
-        text = "Blinking"
-    elif gaze_tracker.is_right():
-        text = "Looking right"
-    elif gaze_tracker.is_left():
-        text = "Looking left"
-    elif gaze_tracker.is_center():
-        text = "Looking center"
+    dir_text = "idk bruh"
+    dir = gaze_tracker.true_gaze_direction()
+    
+    match dir:
+        case 0:
+            dir_text = "looking top left"
+        case 1:
+            dir_text = "looking top middle"
+        case 2:
+            dir_text = "looking top right"
+        case 3:
+            dir_text = "looking middle left"
+        case 4:
+            dir_text = "looking center"
+        case 5:
+            dir_text = "looking middle right"
+        case 6:
+            dir_text = "looking bottom left"
+        case 7:
+            dir_text = "looking bottom middle"
+        case 8:
+            dir_text = "looking bottom right"
 
-    cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
+    cv2.putText(frame, dir_text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
 
-    left_pupil = gaze_tracker.pupil_left_coords()
-    right_pupil = gaze_tracker.pupil_right_coords()
-    cv2.putText(frame, "Left pupil:  " + str(left_pupil), (90, 130), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
-    cv2.putText(frame, "Right pupil: " + str(right_pupil), (90, 165), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
+    blink_text = "idk bruh"
+    blink = gaze_tracker.true_gaze_blinking()
+
+    cv2.putText(frame, blink_text, (90, 130), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
+
 
     cv2.imshow("Demo", frame)
 
