@@ -131,3 +131,69 @@ class GazeTracking(object):
             cv2.line(frame, (x_right, y_right - 5), (x_right, y_right + 5), color)
 
         return frame
+
+    ########################################
+    ### IMPLEMENTED FOR MY OWN PURPOSES ####
+    ########################################
+
+    def is_winking_left(self):
+        if self.pupils_located:
+            return self.eye_left.blinking > 3.8 and self.eye_right.blinking <= 3.8
+    
+    def is_winking_right(self):
+        if self.pupils_located:
+            return self.eye_right.blinking > 3.8 and self.eye_left.blinking <= 3.8
+    
+    def is_up(self):
+        if self.pupils_located:
+            return self.vertical_ratio() <= 0.35
+    
+    def is_bottom(self):
+        if self.pupils_located:
+            return self.vertical_ratio() >= 0.65
+
+    def true_gaze_blinking(self):
+        '''
+        returns 0-3 corresponding to one of these blinking statuses:
+
+        0 NOT BLINKING
+        1 LEFT WINKING (left eye closed)
+        2 RIGHT WINKING
+        3 BLINKING
+        '''
+        wl = self.is_winking_left()
+        wr = self.is_winking_right()
+
+        if wl and wr:
+            return 3
+        elif wr:
+            return 2
+        elif wl:
+            return 1
+        else:
+            return 0
+
+    def true_gaze_direction(self):
+        '''
+        returns 0-8 corresponding to one of these direcitons:
+        
+        0 TOP-LEFT       1 TOP-MIDDLE     2 TOP-RIGHT
+        3 CENTER-LEFT    4 TRUE CENTER    5 CENTER-RIGHT
+        6 BOTTOM-LEFT    7 BOTTOM-MIDDLE  8 BOTTOM-RIGHT
+        '''
+
+        if self.is_left():
+            h_offset = 0
+        elif self.is_right():
+            h_offset = 2
+        else:
+            h_offset = 1
+
+        if self.is_up():
+            v_offset = 0
+        elif self.is_bottom():
+            v_offset = 6
+        else:
+            v_offset = 3
+        
+        return h_offset + v_offset
