@@ -16,6 +16,7 @@ BOTTOM_THRESHOLD = 0.65
 
 #BLINK_THRESHOLD will be ratio of width of eye to height (eyelid-to-eyelid)
 #not blinking is <= BLINK_THRESHOLD, blinking is > BLINK_THRESHOLD
+#similar for WINKING_THRESHOLD
 BLINKING_THRESHOLD = 3.8
 
 class GazeTracking(object):
@@ -108,6 +109,25 @@ class GazeTracking(object):
             pupil_right = self.eye_right.pupil.y / (self.eye_right.center[1] * 2 - 10)
             return (pupil_left + pupil_right) / 2
 
+    def annotated_frame(self):
+        """Returns the main frame with pupils highlighted"""
+        frame = self.frame.copy()
+
+        if self.pupils_located:
+            color = (0, 255, 0)
+            x_left, y_left = self.pupil_left_coords()
+            x_right, y_right = self.pupil_right_coords()
+            cv2.line(frame, (x_left - 5, y_left), (x_left + 5, y_left), color)
+            cv2.line(frame, (x_left, y_left - 5), (x_left, y_left + 5), color)
+            cv2.line(frame, (x_right - 5, y_right), (x_right + 5, y_right), color)
+            cv2.line(frame, (x_right, y_right - 5), (x_right, y_right + 5), color)
+
+        return frame
+
+    ########################################
+    ###   MODIFIED FOR MY OWN PURPOSES  ####
+    ########################################
+
     def is_right(self):
         """Returns true if the user is looking to the right"""
         if self.pupils_located:
@@ -126,27 +146,7 @@ class GazeTracking(object):
     def is_blinking(self):
         """Returns true if the user closes his eyes"""
         if self.pupils_located:
-            blinking_ratio = (self.eye_left.blinking + self.eye_right.blinking) / 2
-            return blinking_ratio > BLINKING_THRESHOLD
-
-    def annotated_frame(self):
-        """Returns the main frame with pupils highlighted"""
-        frame = self.frame.copy()
-
-        if self.pupils_located:
-            color = (0, 255, 0)
-            x_left, y_left = self.pupil_left_coords()
-            x_right, y_right = self.pupil_right_coords()
-            cv2.line(frame, (x_left - 5, y_left), (x_left + 5, y_left), color)
-            cv2.line(frame, (x_left, y_left - 5), (x_left, y_left + 5), color)
-            cv2.line(frame, (x_right - 5, y_right), (x_right + 5, y_right), color)
-            cv2.line(frame, (x_right, y_right - 5), (x_right, y_right + 5), color)
-
-        return frame
-
-    ########################################
-    ### IMPLEMENTED FOR MY OWN PURPOSES ####
-    ########################################
+            return self.eye_left.blinking > BLINKING_THRESHOLD and self.eye_right.blinking > BLINKING_THRESHOLD
 
     def is_winking_left(self):
         if self.pupils_located:
@@ -173,17 +173,13 @@ class GazeTracking(object):
         2 RIGHT WINKING
         3 BLINKING
         '''
-        wl = self.is_winking_left()
-        wr = self.is_winking_right()
-
-        if wl and wr:
-            return 3
-        elif wr:
+        if self.is_winking_right():
             return 2
-        elif wl:
+        if self.is_winking_left():
             return 1
-        else:
-            return 0
+        if self.is_blinking():
+            return 3
+        return 0
 
     def true_gaze_direction(self):
         '''
@@ -209,3 +205,19 @@ class GazeTracking(object):
             v_offset = 3
         
         return h_offset + v_offset
+    
+    def get_br(self):
+        if self.pupils_located:
+            return self.eye_right.blinking
+
+    def get_bl(self):
+        if self.pupils_located:
+            return self.eye_left.blinking
+        
+    def get_hr(self):
+        if self.pupils_located:
+            return self.horizontal_ratio()
+
+    def get_vr(self):
+        if self.pupils_located:
+            return self.vertical_ratio()
