@@ -1,6 +1,5 @@
 import cv2
 from pynput.keyboard import Listener
-import time
 
 from gaze_tracking import GazeTracking
 from mouse_controller import MouseController
@@ -19,6 +18,13 @@ def handle_key_press(event):
         #for other keys (cmd, shift, tab, etc.)
         return
 
+def put_bordered_text(img, text, pos, font = cv2.FONT_HERSHEY_DUPLEX, font_scale = 2, text_color = (0, 0, 255), border_color = (0, 0, 0), thickness = 1):
+    #to put bordered text we really just draw a larger version of the text in the border color
+    #than a smaller version of the text in the normal color
+    cv2.putText(img, text, pos, font, font_scale, border_color, thickness + 7) #border
+    cv2.putText(img, text, pos, font, font_scale, text_color, thickness) #normal
+    
+
 #create a mouse controller for emulation
 mc = MouseController()
 
@@ -33,6 +39,9 @@ webcam = cv2.VideoCapture(0) #will feed in frames from the laptop's webcam
 ######### UPDATE LOOP #############
 while True:
     _, frame = webcam.read()
+    fr_height, fr_width, _ = frame.shape
+    sm_padding = 60
+    md_padding = 120
 
     #analyze and update gaze tracker
     gaze_tracker.refresh(frame)
@@ -63,7 +72,13 @@ while True:
         case 8:
             dir_text = "looking bottom right"
 
-    cv2.putText(frame, dir_text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
+    put_bordered_text(frame, dir_text, (0 + sm_padding, 0 + sm_padding))
+
+    try:
+        put_bordered_text(frame, "BR: {br:.2f}".format(br=gaze_tracker.get_hr()), (0 + sm_padding, md_padding + sm_padding))
+        put_bordered_text(frame, "BL: {bl:.2f}".format(bl=gaze_tracker.get_vr()), (0 + sm_padding, 2 * md_padding))
+    except TypeError:
+        continue
 
     blink_text = "idk bruh"
     blink = gaze_tracker.true_gaze_blinking()
@@ -78,8 +93,13 @@ while True:
         case 3:
             blink_text = "blinking"
 
-    cv2.putText(frame, blink_text, (90, 130), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
+    put_bordered_text(frame, blink_text, (0 + sm_padding, round(fr_height / 2) + sm_padding))
 
+    try:
+        put_bordered_text(frame, "BR: {br:.2f}".format(br=gaze_tracker.get_br()), (0 + sm_padding, round(fr_height / 2) + md_padding + sm_padding))
+        put_bordered_text(frame, "BL: {bl:.2f}".format(bl=gaze_tracker.get_bl()), (0 + sm_padding, round(fr_height / 2) + 2 * md_padding))
+    except TypeError:
+        continue
 
     cv2.imshow("Demo", frame)
 
