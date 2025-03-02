@@ -68,6 +68,16 @@ while True:
     blink_text = "idk bruh"
     blink = gaze_tracker.true_gaze_blinking()
 
+    match blink:
+        case 0:
+            blink_text = "not blinking"
+        case 1:
+            blink_text = "left winking"
+        case 2:
+            blink_text = "right winking"
+        case 3:
+            blink_text = "blinking"
+
     cv2.putText(frame, blink_text, (90, 130), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
 
 
