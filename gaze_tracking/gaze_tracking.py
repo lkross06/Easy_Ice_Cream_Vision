@@ -138,24 +138,19 @@ class GazeTracking(object):
     def get_br(self):
         if self.pupils_located:
             return self.eye_left.blinking
-        
-    def get_hr(self):
-        if self.pupils_located:
-            return self.horizontal_ratio()
-
-    def get_vr(self):
-        if self.pupils_located:
-            return self.vertical_ratio()
+    
+    def both_pupils_found(self):
+        return self.pupils_located
 
     def is_right(self):
         """Returns true if the user is looking to the right"""
         if self.pupils_located:
-            return self.get_hr() <= RIGHT_THRESHOLD
+            return self.horizontal_ratio() <= RIGHT_THRESHOLD
 
     def is_left(self):
         """Returns true if the user is looking to the left"""
         if self.pupils_located:
-            return self.get_hr() >= LEFT_THRESHOLD
+            return self.horizontal_ratio() >= LEFT_THRESHOLD
 
     def is_center(self):
         """Returns true if the user is looking to the center"""
@@ -179,11 +174,11 @@ class GazeTracking(object):
     
     def is_up(self):
         if self.pupils_located:
-            return self.get_vr() <= TOP_THRESHOLD
+            return self.vertical_ratio() <= TOP_THRESHOLD
     
     def is_bottom(self):
         if self.pupils_located:
-            return self.get_hr() >= BOTTOM_THRESHOLD
+            return self.vertical_ratio() >= BOTTOM_THRESHOLD
 
     def true_gaze_blinking(self):
         '''
@@ -193,7 +188,12 @@ class GazeTracking(object):
         1 LEFT WINKING (left eye closed)
         2 RIGHT WINKING
         3 BLINKING
+
+        or -1 if pupils not found
         '''
+        if not self.pupils_located:
+            return -1
+
         if self.is_blinking(): #greater threshold so we can check it first
             return 3
         if self.is_winking_right():
@@ -209,7 +209,11 @@ class GazeTracking(object):
         0 TOP-LEFT       1 TOP-MIDDLE     2 TOP-RIGHT
         3 CENTER-LEFT    4 TRUE CENTER    5 CENTER-RIGHT
         6 BOTTOM-LEFT    7 BOTTOM-MIDDLE  8 BOTTOM-RIGHT
+
+        or -1 if pupils not found
         '''
+        if not self.pupils_located:
+            return -1
 
         if self.is_left():
             h_offset = 0

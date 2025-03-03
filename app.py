@@ -46,62 +46,73 @@ while True:
     #analyze and update gaze tracker
     gaze_tracker.refresh(frame)
 
-    #add markers for pupil location to frame image data
-    frame = gaze_tracker.annotated_frame()
+    if gaze_tracker.both_pupils_found():
+        #add markers for pupil location to frame image data
+        frame = gaze_tracker.annotated_frame()
 
-    dir_text = "idk bruh"
-    dir = gaze_tracker.true_gaze_direction()
-    
-    match dir:
-        case 0:
-            dir_text = "looking top left"
-        case 1:
-            dir_text = "looking top middle"
-        case 2:
-            dir_text = "looking top right"
-        case 3:
-            dir_text = "looking middle left"
-        case 4:
-            dir_text = "looking center"
-        case 5:
-            dir_text = "looking middle right"
-        case 6:
-            dir_text = "looking bottom left"
-        case 7:
-            dir_text = "looking bottom middle"
-        case 8:
-            dir_text = "looking bottom right"
+        dir_text = "looking --"
+        dir = gaze_tracker.true_gaze_direction()
+        
+        match dir:
+            case 0:
+                dir_text = "looking top left"
+            case 1:
+                dir_text = "looking top middle"
+            case 2:
+                dir_text = "looking top right"
+            case 3:
+                dir_text = "looking middle left"
+            case 4:
+                dir_text = "looking center"
+            case 5:
+                dir_text = "looking middle right"
+            case 6:
+                dir_text = "looking bottom left"
+            case 7:
+                dir_text = "looking bottom middle"
+            case 8:
+                dir_text = "looking bottom right"
 
-    put_bordered_text(frame, dir_text, (0 + sm_padding, 0 + sm_padding))
+        put_bordered_text(frame, dir_text, (0 + sm_padding, 0 + sm_padding))
 
-    try:
-        put_bordered_text(frame, "HR: {br:.3f}".format(br=gaze_tracker.get_hr()), (0 + sm_padding, md_padding + sm_padding))
-        put_bordered_text(frame, "VR: {bl:.3f}".format(bl=gaze_tracker.get_vr()), (0 + sm_padding, 2 * md_padding))
-    except TypeError:
-        continue
+        hr = "--"
+        vr = "--"
+        try:
+            hr = "{x:.2f}".format(x=gaze_tracker.horizontal_ratio())
+            vr = "{x:.2f}".format(x=gaze_tracker.vertical_ratio())
+        except TypeError:
+            continue
 
-    blink_text = "idk bruh"
-    blink = gaze_tracker.true_gaze_blinking()
+        put_bordered_text(frame, "HR: " + hr, (0 + sm_padding, md_padding + sm_padding))
+        put_bordered_text(frame, "VR: " + vr, (0 + sm_padding, 2 * md_padding))
 
-    match blink:
-        case 0:
-            blink_text = "not blinking"
-        case 1:
-            blink_text = "left winking"
-        case 2:
-            blink_text = "right winking"
-        case 3:
-            blink_text = "blinking"
+        blink_text = "--"
+        blink = gaze_tracker.true_gaze_blinking()
 
-    put_bordered_text(frame, blink_text, (0 + sm_padding, round(fr_height / 2) + sm_padding))
+        match blink:
+            case 0:
+                blink_text = "not blinking"
+            case 1:
+                blink_text = "left winking"
+            case 2:
+                blink_text = "right winking"
+            case 3:
+                blink_text = "blinking"
 
-    try:
-        put_bordered_text(frame, "BR: {br:.1f}".format(br=gaze_tracker.get_br()), (0 + sm_padding, round(fr_height / 2) + md_padding + sm_padding))
-        put_bordered_text(frame, "BL: {bl:.1f}".format(bl=gaze_tracker.get_bl()), (0 + sm_padding, round(fr_height / 2) + 2 * md_padding))
-    except TypeError:
-        continue
+        put_bordered_text(frame, blink_text, (0 + sm_padding, round(fr_height / 2) + sm_padding))
 
-    cv2.imshow("Demo", frame)
+        br = "--"
+        bl = "--"
+        try:
+            br = "{x:.2f}".format(x=gaze_tracker.get_br())
+            bl = "{x:.2f}".format(x=gaze_tracker.get_bl())
+        except TypeError:
+            continue
+
+        put_bordered_text(frame, "BR: " + br, (0 + sm_padding, round(fr_height / 2) + md_padding + sm_padding))
+        put_bordered_text(frame, "BL: " + bl, (0 + sm_padding, round(fr_height / 2) + 2 * md_padding))
+
+    cv2.imshow("HOTH XII", frame)
 
     #update mouse stuff here? with accel/decel
     mc.update()
