@@ -111,7 +111,7 @@ while True:
                 mc.apply_force("right")
                 mc.apply_force("bottom")
 
-        put_bordered_text(frame, dir_text, (0 + sm_padding, 0 + sm_padding))
+        put_bordered_text(frame, dir_text, (0 + sm_padding, 2 * sm_padding))
 
         hr = "--"
         vr = "--"
@@ -121,8 +121,8 @@ while True:
         except TypeError:
             continue
 
-        put_bordered_text(frame, "HR: " + hr, (0 + sm_padding, md_padding + sm_padding))
-        put_bordered_text(frame, "VR: " + vr, (0 + sm_padding, 2 * md_padding))
+        put_bordered_text(frame, "HR: " + hr, (0 + sm_padding, md_padding + 2 * sm_padding))
+        put_bordered_text(frame, "VR: " + vr, (0 + sm_padding, 2 * md_padding + sm_padding))
 
         blink_text = "--"
         blink = gaze_tracker.true_gaze_blinking()
