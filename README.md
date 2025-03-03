@@ -4,7 +4,10 @@
 
 Easy Ice Cream Vision is a desktop application that allows the user to control their cursor entirely with their eyes.
 
-[image]
+![full short demo](media/demo.gif)
+
+> Note that the webcam recording is *mirrored*, so it looks as though the cursor is going in the reverse direction of my eyes.
+
 
 This project uses and modifies [Antoine Lamé's gaze tracking library](https://github.com/antoinelame/GazeTracking?tab=readme-ov-file). See his repository for more information!
 
@@ -33,7 +36,10 @@ python3 app.py
 
 Make sure you are in good lighting and not wearing any face or eye equipment! The application will open a window mirroring the webcam's video. 
 
-Labels with information about your eyes and pupils will appear once your pupils are captured by the software.
+![onload demo](media/demo2.png)
+![wink demo](media/wink.png)
+
+> Labels with information about your eyes and pupils will appear once your pupils are captured by the software.
 
 - Look in any direction *with your eyes only* to **move the cursor** in that direction.
 
