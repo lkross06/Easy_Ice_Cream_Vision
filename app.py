@@ -10,10 +10,16 @@ from mouse_controller import MouseController
 BLINK_TIMER_DURATION = 5
 BLINK_TIMER_COOLDOWN = 10 #gotta wait before you can click again
 
+WINK_TIMER_DURATION = 5
+WINK_TIMER_COOLDOWN = 10
+
 keep_updating = True
 
 blink_timer = BLINK_TIMER_DURATION
 blink_cooldown = BLINK_TIMER_COOLDOWN
+
+wink_timer = WINK_TIMER_DURATION
+wink_cooldown = WINK_TIMER_COOLDOWN
 
 def handle_key_press(event):
     try:
@@ -118,12 +124,19 @@ while True:
         match blink:
             case 0:
                 blink_text = "not blinking"
+                mc.release()
+
                 blink_timer = BLINK_TIMER_DURATION
                 blink_cooldown -= 1
+
+                wink_timer = WINK_TIMER_DURATION
+                wink_cooldown -= 1
             case 1:
                 blink_text = "left winking"
+                wink_timer -= 1
             case 2:
                 blink_text = "right winking"
+                wink_timer -= 1
             case 3:
                 blink_text = "blinking"
                 blink_timer -= 1
@@ -149,6 +162,10 @@ while True:
     if blink_timer <= 0 and blink_cooldown <= 0:
         mc.click()
         blink_cooldown = BLINK_TIMER_COOLDOWN
+    
+    if wink_timer <= 0 and wink_cooldown <= 0:
+        mc.press()
+        wink_cooldown = WINK_TIMER_COOLDOWN
             
     mc.update_position()
     
