@@ -61,9 +61,6 @@ while True:
     #analyze and update gaze tracker
     gaze_tracker.refresh(frame)
 
-    #keep track of if the user was looking straight ahead (no new force)
-    applied_force = True #assume user is going to change direction
-
     if gaze_tracker.both_pupils_found():
         #add markers for pupil location to frame image data
         frame = gaze_tracker.annotated_frame()
@@ -91,9 +88,6 @@ while True:
             case 4:
                 dir_text = "looking center"
                 mc.apply_decel()
-                #didnt apply a new directional force, so we can do blinking things
-                #in other words, we only want to do blinking things while looking central
-                applied_force = False
             case 5:
                 dir_text = "looking middle right"
                 mc.apply_force("right")
@@ -166,11 +160,10 @@ while True:
 
     #update mouse things
     mc.update_position()
-    #only apply click affects when user looks at center
-    if not applied_force:
-        if blink_timer <= 0 and blink_cooldown <= 0:
-            mc.click()
-            blink_cooldown = BLINK_TIMER_COOLDOWN
+
+    if blink_timer <= 0 and blink_cooldown <= 0:
+        mc.click()
+        blink_cooldown = BLINK_TIMER_COOLDOWN
         
     if wink_timer <= 0 and wink_cooldown <= 0:
         mc.press()
