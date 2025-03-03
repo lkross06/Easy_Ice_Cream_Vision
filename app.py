@@ -45,6 +45,8 @@ webcam = cv2.VideoCapture(0) #will feed in frames from the laptop's webcam
 
 ######### UPDATE LOOP #############
 while True:
+    mc.update_position()
+
     _, frame = webcam.read()
     fr_height, fr_width, _ = frame.shape
     sm_padding = 60
@@ -63,22 +65,39 @@ while True:
         match dir:
             case 0:
                 dir_text = "looking top left"
+                mc.apply_force("left")
+                mc.apply_force("up")
             case 1:
                 dir_text = "looking top middle"
+                mc.apply_force("up")
+                mc.apply_decel(y = False)
             case 2:
                 dir_text = "looking top right"
+                mc.apply_force("right")
+                mc.apply_force("up")
             case 3:
                 dir_text = "looking middle left"
+                mc.apply_force("left")
+                mc.apply_decel(x = False)
             case 4:
                 dir_text = "looking center"
+                mc.apply_decel()
             case 5:
                 dir_text = "looking middle right"
+                mc.apply_force("right")
+                mc.apply_decel(x = False)
             case 6:
                 dir_text = "looking bottom left"
+                mc.apply_force("left")
+                mc.apply_force("bottom")
             case 7:
                 dir_text = "looking bottom middle"
+                mc.apply_force("bottom")
+                mc.apply_decel(y = False)
             case 8:
                 dir_text = "looking bottom right"
+                mc.apply_force("right")
+                mc.apply_force("bottom")
 
         put_bordered_text(frame, dir_text, (0 + sm_padding, 0 + sm_padding))
 
@@ -108,10 +127,6 @@ while True:
             case 3:
                 blink_text = "blinking"
                 blink_timer -= 1
-        
-        if blink_timer <= 0 and blink_cooldown <= 0:
-            mc.click()
-            blink_cooldown = BLINK_TIMER_COOLDOWN
 
         put_bordered_text(frame, blink_text, (0 + sm_padding, round(fr_height / 2) + sm_padding))
 
@@ -125,8 +140,17 @@ while True:
 
         put_bordered_text(frame, "BR: " + br, (0 + sm_padding, round(fr_height / 2) + md_padding + sm_padding))
         put_bordered_text(frame, "BL: " + bl, (0 + sm_padding, round(fr_height / 2) + 2 * md_padding))
+    else:
+        mc.reset()
 
     cv2.imshow("HOTH XII", frame)
+
+    #update mouse things
+    if blink_timer <= 0 and blink_cooldown <= 0:
+        mc.click()
+        blink_cooldown = BLINK_TIMER_COOLDOWN
+            
+    mc.update_position()
     
     # #try to perform next update
     if not keep_updating:
