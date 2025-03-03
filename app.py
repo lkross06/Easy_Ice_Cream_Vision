@@ -173,7 +173,7 @@ while True:
     if not keep_updating:
         break
     else:
-        cv2.waitKey(1)
+        cv2.waitKey(1) #waits 1 ms before performing next update
 
 
 ######### DESTRUCTION #############
