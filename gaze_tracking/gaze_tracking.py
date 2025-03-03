@@ -14,10 +14,12 @@ LEFT_THRESHOLD = 0.65
 TOP_THRESHOLD = 0.35
 BOTTOM_THRESHOLD = 0.65
 
-#BLINK_THRESHOLD will be ratio of width of eye to height (eyelid-to-eyelid)
-#not blinking is <= BLINK_THRESHOLD, blinking is > BLINK_THRESHOLD
-#similar for WINKING_THRESHOLD
-BLINKING_THRESHOLD = 3.8
+BLINKING_THRESHOLD = 4.68
+WINKING_RIGHT_THRESHOLD = 4.5
+WINKING_LEFT_THRESHOLD = 4.2 #for some reason my eyes are really asymmetrical?? rip
+#must be 8% difference in eye blinking amounts, since when you wink the muscles in your face
+#make both eyes naturally close a bit
+WINKING_EYE_DIFF = 0.08 
 
 class GazeTracking(object):
     """
@@ -128,15 +130,31 @@ class GazeTracking(object):
     ###   MODIFIED FOR MY OWN PURPOSES  ####
     ########################################
 
+    def get_bl(self):
+        if self.pupils_located:
+            return self.eye_right.blinking
+
+    def get_br(self):
+        if self.pupils_located:
+            return self.eye_left.blinking
+        
+    def get_hr(self):
+        if self.pupils_located:
+            return self.horizontal_ratio()
+
+    def get_vr(self):
+        if self.pupils_located:
+            return self.vertical_ratio()
+
     def is_right(self):
         """Returns true if the user is looking to the right"""
         if self.pupils_located:
-            return self.horizontal_ratio() <= RIGHT_THRESHOLD
+            return self.get_hr() <= RIGHT_THRESHOLD
 
     def is_left(self):
         """Returns true if the user is looking to the left"""
         if self.pupils_located:
-            return self.horizontal_ratio() >= LEFT_THRESHOLD
+            return self.get_hr() >= LEFT_THRESHOLD
 
     def is_center(self):
         """Returns true if the user is looking to the center"""
@@ -146,23 +164,25 @@ class GazeTracking(object):
     def is_blinking(self):
         """Returns true if the user closes his eyes"""
         if self.pupils_located:
-            return self.eye_left.blinking > BLINKING_THRESHOLD and self.eye_right.blinking > BLINKING_THRESHOLD
+            return self.get_bl() > BLINKING_THRESHOLD and self.get_br() > BLINKING_THRESHOLD
 
-    def is_winking_left(self):
-        if self.pupils_located:
-            return self.eye_left.blinking > BLINKING_THRESHOLD and self.eye_right.blinking <= BLINKING_THRESHOLD
-    
+    #***NOTE: the library considers "right" and "left" in terms of pixel position/coordinates
+    #i consider them relative to myself, so i have to flip them
     def is_winking_right(self):
         if self.pupils_located:
-            return self.eye_right.blinking > BLINKING_THRESHOLD and self.eye_left.blinking <= BLINKING_THRESHOLD
+            return self.get_br() > WINKING_RIGHT_THRESHOLD and self.get_br() - self.get_bl() >= WINKING_EYE_DIFF * WINKING_RIGHT_THRESHOLD
+   
+    def is_winking_left(self):
+        if self.pupils_located:
+            return self.get_bl() > WINKING_LEFT_THRESHOLD and self.get_bl() - self.get_br() >= WINKING_EYE_DIFF * WINKING_LEFT_THRESHOLD
     
     def is_up(self):
         if self.pupils_located:
-            return self.vertical_ratio() <= TOP_THRESHOLD
+            return self.get_vr() <= TOP_THRESHOLD
     
     def is_bottom(self):
         if self.pupils_located:
-            return self.vertical_ratio() >= BOTTOM_THRESHOLD
+            return self.get_hr() >= BOTTOM_THRESHOLD
 
     def true_gaze_blinking(self):
         '''
@@ -173,12 +193,12 @@ class GazeTracking(object):
         2 RIGHT WINKING
         3 BLINKING
         '''
+        if self.is_blinking(): #greater threshold so we can check it first
+            return 3
         if self.is_winking_right():
             return 2
         if self.is_winking_left():
             return 1
-        if self.is_blinking():
-            return 3
         return 0
 
     def true_gaze_direction(self):
@@ -205,19 +225,3 @@ class GazeTracking(object):
             v_offset = 3
         
         return h_offset + v_offset
-    
-    def get_br(self):
-        if self.pupils_located:
-            return self.eye_right.blinking
-
-    def get_bl(self):
-        if self.pupils_located:
-            return self.eye_left.blinking
-        
-    def get_hr(self):
-        if self.pupils_located:
-            return self.horizontal_ratio()
-
-    def get_vr(self):
-        if self.pupils_located:
-            return self.vertical_ratio()
