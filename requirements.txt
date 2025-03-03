@@ -1,0 +1,6 @@
+dlib==19.24.4
+numpy==1.26.4
+opencv-python==4.10.0.82
+pynput==1.7.8
+setuptools==70.0.0
+tk==0.1.0
