@@ -143,7 +143,7 @@ while True:
     else:
         mc.reset()
 
-    cv2.imshow("HOTH XII", frame)
+    cv2.imshow("Easy Ice Cream Vision", frame)
 
     #update mouse things
     if blink_timer <= 0 and blink_cooldown <= 0:
