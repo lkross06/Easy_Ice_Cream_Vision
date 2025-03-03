@@ -5,10 +5,6 @@ class MouseController:
         self.__mouse = Controller()
         self.__is_pressing = False
 
-        #acceleration
-        self.__ax = 0
-        self.__ay = 0
-
     def get_position(self):
         #NOTE: top left corner is (0,0)
         return self.__mouse.position
@@ -35,7 +31,3 @@ class MouseController:
     def click(self, n = 1):
         #clicks n times
         self.__mouse.click(Button.left, n)
-
-    def update(self):
-        #performs all updates to mouse
-        return

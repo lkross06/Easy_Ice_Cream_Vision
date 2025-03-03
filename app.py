@@ -6,7 +6,14 @@ from mouse_controller import MouseController
 
 ######### INITIALIZATION #############
 
+#must be blinking for 1000ms to simulate a click
+BLINK_TIMER_DURATION = 5
+BLINK_TIMER_COOLDOWN = 10 #gotta wait before you can click again
+
 keep_updating = True
+
+blink_timer = BLINK_TIMER_DURATION
+blink_cooldown = BLINK_TIMER_COOLDOWN
 
 def handle_key_press(event):
     try:
@@ -92,12 +99,19 @@ while True:
         match blink:
             case 0:
                 blink_text = "not blinking"
+                blink_timer = BLINK_TIMER_DURATION
+                blink_cooldown -= 1
             case 1:
                 blink_text = "left winking"
             case 2:
                 blink_text = "right winking"
             case 3:
                 blink_text = "blinking"
+                blink_timer -= 1
+        
+        if blink_timer <= 0 and blink_cooldown <= 0:
+            mc.click()
+            blink_cooldown = BLINK_TIMER_COOLDOWN
 
         put_bordered_text(frame, blink_text, (0 + sm_padding, round(fr_height / 2) + sm_padding))
 
@@ -113,9 +127,6 @@ while True:
         put_bordered_text(frame, "BL: " + bl, (0 + sm_padding, round(fr_height / 2) + 2 * md_padding))
 
     cv2.imshow("HOTH XII", frame)
-
-    #update mouse stuff here? with accel/decel
-    mc.update()
     
     # #try to perform next update
     if not keep_updating:
