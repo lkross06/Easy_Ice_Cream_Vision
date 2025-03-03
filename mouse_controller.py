@@ -40,9 +40,9 @@ class MouseController:
 
     def apply_force(self, direction, magnitude = DEFAULT_MAGNITUDE):
         if direction == "up":
-            self._vy += magnitude
-        elif direction == "down":
             self._vy -= magnitude
+        elif direction == "down":
+            self._vy += magnitude
         elif direction == "right":
             self._vx += magnitude
         elif direction == "left":
