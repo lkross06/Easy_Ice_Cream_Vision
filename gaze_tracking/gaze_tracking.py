@@ -7,14 +7,15 @@ from .calibration import Calibration
 
 #horizontal ratio will be 0.0 < RIGHT_THRESHOLD < LEFT_THRESHOLD < 1.0
 #(i.e. dividing the eye into three sections)
-RIGHT_THRESHOLD = 0.35
+RIGHT_THRESHOLD = 0.30
 LEFT_THRESHOLD = 0.65
 
 #vertical ratio will be 0.0 < TOP_THRESHOLD < BOTTOM_THRESHOLD < 1.0
-TOP_THRESHOLD = 0.35
-BOTTOM_THRESHOLD = 0.65
+TOP_THRESHOLD = 0.45
+BOTTOM_THRESHOLD = 0.687
 
-BLINKING_THRESHOLD = 4.68
+#resting value of around 2.9-3.2, when blinking around 4.9-5.5
+BLINKING_THRESHOLD = 4.68 #both eyes must be this closed
 WINKING_RIGHT_THRESHOLD = 4.5
 WINKING_LEFT_THRESHOLD = 4.2 #for some reason my eyes are really asymmetrical?? rip
 #must be 8% difference in eye blinking amounts, since when you wink the muscles in your face

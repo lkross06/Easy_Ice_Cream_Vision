@@ -75,8 +75,8 @@ while True:
     put_bordered_text(frame, dir_text, (0 + sm_padding, 0 + sm_padding))
 
     try:
-        put_bordered_text(frame, "BR: {br:.1f}".format(br=gaze_tracker.get_hr()), (0 + sm_padding, md_padding + sm_padding))
-        put_bordered_text(frame, "BL: {bl:.1f}".format(bl=gaze_tracker.get_vr()), (0 + sm_padding, 2 * md_padding))
+        put_bordered_text(frame, "HR: {br:.3f}".format(br=gaze_tracker.get_hr()), (0 + sm_padding, md_padding + sm_padding))
+        put_bordered_text(frame, "VR: {bl:.3f}".format(bl=gaze_tracker.get_vr()), (0 + sm_padding, 2 * md_padding))
     except TypeError:
         continue
 
