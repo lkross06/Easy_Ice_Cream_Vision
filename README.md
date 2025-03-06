@@ -1,6 +1,6 @@
 # Easy Ice Cream Vision
 
-*Submitted for Hack on the Hill (HOTH) XII on March 3rd, 2025, hosted by ACM Hack at UCLA.*
+*Submitted for Hack on the Hill (HOTH) XII on March 3rd, 2025, hosted by ACM Hack at UCLA. See my submission [here](https://devpost.com/software/easy-ice-cream-vision)!*
 
 Easy Ice Cream Vision is a desktop application that allows the user to control their cursor entirely with their eyes.
 
